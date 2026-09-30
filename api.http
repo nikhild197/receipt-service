@@ -1,0 +1,47 @@
+### Health
+GET http://localhost:8080/health
+
+### Upload clean fixture
+POST http://localhost:8080/receipts
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="receipt-clean.txt"
+Content-Type: text/plain
+
+< ./src/main/resources/fixtures/receipt-clean.txt
+--boundary--
+
+### Set IDs returned by upload/process before running the requests below
+@receiptId = REPLACE_ME
+@transactionId = REPLACE_ME
+
+### Process receipt
+POST http://localhost:8080/receipts/{{receiptId}}/process
+
+### Get transaction
+GET http://localhost:8080/transactions/{{transactionId}}
+
+### Re-itemize from stored OCR
+POST http://localhost:8080/transactions/{{transactionId}}/itemize
+
+### Valid merge-style item replacement
+PATCH http://localhost:8080/transactions/{{transactionId}}/items
+Content-Type: application/json
+
+{
+  "items": [
+    {"description": "Coffee and sandwich", "amount": 12.40},
+    {"description": "Mineral water", "amount": 2.60}
+  ]
+}
+
+### Invalid replacement -> 409 Conflict
+PATCH http://localhost:8080/transactions/{{transactionId}}/items
+Content-Type: application/json
+
+{
+  "items": [
+    {"description": "Coffee", "amount": 2.00}
+  ]
+}
