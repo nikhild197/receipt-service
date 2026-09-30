@@ -44,11 +44,3 @@ This checklist maps the final repository to the take-home brief.
 ./mvnw clean test
 ./mvnw spring-boot:run
 ```
-
-After the final commit:
-
-```bash
-git rev-parse HEAD
-```
-
-Submit the repository URL together with that exact commit SHA.
